@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tagwright: free PDF accessibility checker and fast PDF/UA remediation</title>
+<meta name="description" content="Check a PDF for accessibility in your browser (nothing is uploaded). Then get it tagged for screen readers to PDF/UA-1, with a veraPDF report and an evidence pack, from $1.25 a page.">
+<link rel="canonical" href="https://beingrealfrank.github.io/tagwright/">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script src="vendor/pdf-lib.min.js" defer></script>
+<script type="module" src="checker.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top">
+  <p class="brand"><a href="./">Tagwright</a></p>
+  <nav aria-label="Main"><ul><li><a href="#check">Free check</a></li><li><a href="#how">How it works</a></li><li><a href="#pricing">Pricing</a></li><li><a href="#faq">FAQ</a></li></ul></nav>
+</header>
+<main id="main">
+<section class="hero">
+  <h1>Accessible PDFs, with the receipts.</h1>
+  <p class="lede">Tagwright tags your PDFs for screen readers (PDF/UA-1) and hands back an evidence pack showing what was fixed and how each item was checked: by machine, by an AI reviewer, or by a person.</p>
+</section>
+
+<section id="check" aria-labelledby="check-h">
+  <h2 id="check-h">Free accessibility check</h2>
+  <p>Pick one or more PDFs. The check runs <strong>in your browser</strong>: your files are not uploaded anywhere.</p>
+  <div id="drop" class="drop">
+    <label for="pdf-input">Choose PDF files</label>
+    <input id="pdf-input" type="file" accept="application/pdf,.pdf" multiple>
+    <p class="hint">or drag them here (up to 20 at a time)</p>
+  </div>
+  <div id="results"></div>
+</section>
+
+<section id="how" aria-labelledby="how-h">
+  <h2 id="how-h">How it works</h2>
+  <ol class="steps">
+    <li><strong>Prepare.</strong> Scanned pages get OCR; missing fonts get embedded.</li>
+    <li><strong>Tag.</strong> Layout analysis builds the structure: headings, paragraphs, lists, tables with header cells, figures, links, and a logical reading order. Page furniture becomes artifacts.</li>
+    <li><strong>Describe.</strong> A vision model writes alt text for each figure, and a second, separate pass checks it against the image. Disagreements are flagged, not hidden.</li>
+    <li><strong>Verify.</strong> Every output file runs through <a href="https://verapdf.org/">veraPDF</a>, the open-source PDF/UA validator. Language, title and metadata are set.</li>
+    <li><strong>Prove.</strong> You get an evidence pack: the veraPDF report, a checkpoint table marking each item <em>machine-verified</em>, <em>agent-judged</em> or <em>human-sampled</em>, an alt-text manifest, a table-header manifest, a reading-order transcript, SHA-256 hashes of input and output, and a signed ledger entry.</li>
+  </ol>
+  <p>On a benchmark of 60 real government PDFs from the public <a href="https://digitalcorpora.org/corpora/file-corpora/files/">GovDocs1 corpus</a>, 93% of Tagwright's output passed veraPDF's PDF/UA-1 machine checks. Machine checks are necessary, not sufficient: that is why the evidence pack says which checks a machine made and which it couldn't.</p>
+</section>
+
+<section id="pricing" aria-labelledby="pricing-h">
+  <h2 id="pricing-h">Pricing</h2>
+  <p>Per page. The first 3 pages are free so you can judge the result.</p>
+  <table class="prices">
+    <caption class="sr">Price per page by turnaround and document type</caption>
+    <thead><tr><th scope="col">Document</th><th scope="col">Standard (24 hours)</th><th scope="col">Express (minutes)</th></tr></thead>
+    <tbody>
+      <tr><th scope="row">Simple: text, headings, lists, a few images</th><td>$1.25</td><td>$1.50</td></tr>
+      <tr><th scope="row">Complex: tables, forms, many figures</th><td>$3.50</td><td>$4.00</td></tr>
+      <tr><th scope="row">Scanned pages (OCR)</th><td>+$1.00</td><td>+$1.00</td></tr>
+    </tbody>
+  </table>
+  <p>Agencies and web shops: wholesale API pricing from $0.90 a page. Libraries of hundreds of PDFs: a free triage report sorts every file into archive, delete, convert to HTML, or remediate, so you only pay for the ones that matter.</p>
+</section>
+
+<section id="order" aria-labelledby="order-h">
+  <h2 id="order-h">Get files fixed</h2>
+  <p>Online ordering with secure upload is opening shortly. Until then, run the free check above to see what each file needs and what it would cost.</p>
+</section>
+
+<section id="faq" aria-labelledby="faq-h">
+  <h2 id="faq-h">Questions</h2>
+  <h3>Will this make my organisation compliant?</h3>
+  <p>No tool can promise that, and we don't. Laws such as the ADA, Section 504/508 and the European Accessibility Act depend on your whole service, not one file. What we deliver is a tagged file that passes the machine-checkable parts of PDF/UA-1, plus an honest record of what was and wasn't checked by a person. This is not legal advice.</p>
+  <h3>What happens to my files?</h3>
+  <p>The free check never uploads them. Files you send for fixing are processed by an automated pipeline, are never used to train models, and are deleted 30 days after delivery. Please don't send health records or student records.</p>
+  <h3>Why not just use an auto-tag button?</h3>
+  <p>One-click tagging is cheap but unchecked: you can't see what it guessed. Human remediation shops are thorough but cost $5 to $25 a page. Tagwright sits between: automated, cross-checked, and documented page by page.</p>
+  <h3>Can you fix Word or PowerPoint files?</h3>
+  <p>PDF first. DOCX, PPTX and EPUB are on the way.</p>
+</section>
+</main>
+<footer>
+  <p>Tagwright · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p>
+  <p>Not legal advice. No guarantee of compliance with any law or standard.</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://beingrealfrank.github.io/tagwright/sitemap.xml
