@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fix PDFs · Tagwright</title>
+<meta name="description" content="Upload PDFs to be tagged for screen readers (PDF/UA-1), with a veraPDF report and evidence pack. First 3 pages free.">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top"><p class="brand"><a href="./">Tagwright</a></p><nav aria-label="Main"><ul><li><a href="./#check">Free check</a></li><li><a href="./#pricing">Pricing</a></li><li><a href="guides/">Guides</a></li></ul></nav></header>
+<main id="main">
+<h1>Fix PDFs</h1>
+<div id="closed" hidden><p>Online ordering is opening shortly. Run the <a href="./#check">free check</a> in the meantime.</p></div>
+<div id="open">
+<section aria-labelledby="buy-h">
+  <h2 id="buy-h">1. Get page credits</h2>
+  <p>1 credit per simple page, 3 per complex page (tables, forms, many figures), plus 1 per scanned page that needs OCR. Your license key arrives by email after checkout.</p>
+  <ul id="packs" class="packs"></ul>
+  <p>Or try it first: leave the key empty and we'll fix the <strong>first 3 pages of one file free</strong>.</p>
+</section>
+<section aria-labelledby="up-h">
+  <h2 id="up-h">2. Upload</h2>
+  <form id="f">
+    <p><label for="key">License key</label><br><input id="key" name="license_key" autocomplete="off" size="44" aria-describedby="key-hint"><br><span id="key-hint" class="fine">Leave empty for the free 3-page sample.</span></p>
+    <p><label for="files">PDF files (up to 20, 24 MB each)</label><br><input id="files" name="file" type="file" accept="application/pdf,.pdf" multiple required></p>
+    <p id="est" aria-live="polite"></p>
+    <p><label><input type="checkbox" id="agree" required> I have the right to share these files, they contain no health or student records, and I accept the <a href="terms.html">terms</a>.</label></p>
+    <p><button type="submit">Upload and fix</button></p>
+  </form>
+  <div id="msg" role="status" aria-live="polite"></div>
+</section>
+</div>
+<section id="job" hidden aria-labelledby="job-h">
+  <h2 id="job-h">Your job</h2>
+  <p>Bookmark this page: it is the only way back to your results. Files are deleted after 30 days.</p>
+  <div id="jobstate" role="status" aria-live="polite">Loading…</div>
+</section>
+</main>
+<footer><p>Tagwright · <a href="privacy.html">Privacy</a> · <a href="terms.html">Terms</a></p><p>Not legal advice. No guarantee of compliance with any law or standard.</p></footer>
+<script type="module">
+import config from "./config.js";
+import * as pdfjs from "./vendor/pdf.min.mjs";
+pdfjs.GlobalWorkerOptions.workerSrc = "./vendor/pdf.worker.min.mjs";
+const $ = (s) => document.querySelector(s);
+if (!config.api) { $("#open").hidden = true; $("#closed").hidden = false; }
+for (const p of config.packs || []) {
+  const li = document.createElement("li");
+  const a = document.createElement("a"); a.href = p.url; a.textContent = `${p.credits} credits: $${p.price}`;
+  li.append(a, ` ($${(p.price / p.credits).toFixed(2)} per credit)`); $("#packs").append(li);
+}
+async function pagesOf(file) {
+  try { const pdf = await pdfjs.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise; const n = pdf.numPages; return n; }
+  catch { return 0; }
+}
+let pages = 0;
+$("#files").addEventListener("change", async () => {
+  pages = 0; for (const f of $("#files").files) pages += await pagesOf(f);
+  $("#est").textContent = pages ? `${pages} pages: between ${pages} and ${pages * 4} credits, depending on complexity. You are charged after processing, for the pages actually fixed.` : "";
+});
+$("#f").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const fd = new FormData(); fd.append("license_key", $("#key").value.trim()); fd.append("pages", String(pages));
+  for (const f of $("#files").files) fd.append("file", f);
+  $("#msg").textContent = "Uploading…";
+  try {
+    const r = await fetch(config.api + "/api/jobs", { method: "POST", body: fd });
+    const j = await r.json();
+    if (!r.ok) { $("#msg").textContent = j.error || "Upload failed."; return; }
+    location.hash = "job=" + j.id; show();
+  } catch (err) { $("#msg").textContent = "Upload failed: " + err.message; }
+});
+async function show() {
+  const m = location.hash.match(/job=([0-9a-f]{36})/); if (!m || !config.api) return;
+  $("#open").hidden = true; $("#job").hidden = false;
+  const r = await fetch(`${config.api}/api/jobs/${m[1]}`); const j = await r.json();
+  const st = $("#jobstate"); st.textContent = "";
+  const say = (t) => { const p = document.createElement("p"); p.textContent = t; st.append(p); };
+  if (!r.ok) { say(j.error); return; }
+  const label = { queued: "Queued.", processing: "Processing…", done: "Done.", failed: j.message, needs_credits: "Not enough credits: " + (j.message || "") };
+  say(`${label[j.status] || j.status} ${j.sample ? "(free 3-page sample)" : ""}`);
+  if (j.status === "done") {
+    for (const s of j.summary || []) say(`${s.file}: ${s.pages} pages · veraPDF PDF/UA-1 ${s.verapdf_ua1 ? "passed" : "has open items (see evidence)"}${s.figures_needing_review ? ` · ${s.figures_needing_review} figure(s) flagged for review` : ""}`);
+    const ul = document.createElement("ul");
+    for (const o of j.outputs) { const li = document.createElement("li"); const a = document.createElement("a"); a.href = `${config.api}/api/jobs/${m[1]}/files/${encodeURIComponent(o)}`; a.textContent = o; li.append(a); ul.append(li); }
+    st.append(ul);
+  } else if (j.status === "queued" || j.status === "processing") setTimeout(show, 15000);
+}
+show();
+</script>
+</body>
+</html>

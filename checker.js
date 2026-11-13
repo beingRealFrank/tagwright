@@ -3,7 +3,7 @@ import * as pdfjs from "./vendor/pdf.min.mjs";
 pdfjs.GlobalWorkerOptions.workerSrc = "./vendor/pdf.worker.min.mjs";
 const { PDFDocument, PDFName, PDFDict, PDFArray, PDFString, PDFHexString, PDFRawStream } = window.PDFLib;
 
-const PRICE = { simple: 1.5, complex: 4.0, scanned: 1.0 }; // Express, per page
+const PRICE = { simple: 1.25, complex: 3.75, scanned: 1.25 }; // credits at the 100-pack rate ($1.25/credit)
 
 function lookup(ctx, obj) { return obj ? ctx.lookup(obj) : undefined; }
 function dictGet(ctx, d, key) { return d instanceof PDFDict ? lookup(ctx, d.get(PDFName.of(key))) : undefined; }
