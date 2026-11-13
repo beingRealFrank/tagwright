@@ -46,6 +46,7 @@ import * as pdfjs from "./vendor/pdf.min.mjs";
 pdfjs.GlobalWorkerOptions.workerSrc = "./vendor/pdf.worker.min.mjs";
 const $ = (s) => document.querySelector(s);
 if (!config.api) { $("#open").hidden = true; $("#closed").hidden = false; }
+if (!(config.packs || []).length) { const li = document.createElement("li"); li.textContent = "Credit packs go on sale shortly. The free sample works now."; $("#packs").append(li); }
 for (const p of config.packs || []) {
   const li = document.createElement("li");
   const a = document.createElement("a"); a.href = p.url; a.textContent = `${p.credits} credits: $${p.price}`;
@@ -62,15 +63,32 @@ $("#files").addEventListener("change", async () => {
 });
 $("#f").addEventListener("submit", async (e) => {
   e.preventDefault();
-  const fd = new FormData(); fd.append("license_key", $("#key").value.trim()); fd.append("pages", String(pages));
-  for (const f of $("#files").files) fd.append("file", f);
-  $("#msg").textContent = "Uploading…";
+  const files = [...$("#files").files];
+  const say = (t) => { $("#msg").textContent = t; };
   try {
-    const r = await fetch(config.api + "/api/jobs", { method: "POST", body: fd });
-    const j = await r.json();
-    if (!r.ok) { $("#msg").textContent = j.error || "Upload failed."; return; }
-    location.hash = "job=" + j.id; show();
-  } catch (err) { $("#msg").textContent = "Upload failed: " + err.message; }
+    say("Starting…");
+    let r = await fetch(config.api + "/api/jobs", { method: "POST", headers: { "content-type": "application/json" },
+      body: JSON.stringify({ license_key: $("#key").value.trim(), pages, files: files.map((f) => ({ name: f.name, size: f.size })) }) });
+    let j = await r.json();
+    if (!r.ok) { say(j.error || "Could not start the upload."); return; }
+    const id = j.id, size = j.chunk_size;
+    const total = files.reduce((a, f) => a + Math.ceil(f.size / size), 0); let done = 0;
+    for (const [i, f] of files.entries()) {
+      for (let n = 0; n * size < f.size; n++) {
+        say(`Uploading… ${Math.round(100 * done / total)}%`);
+        for (let attempt = 0; ; attempt++) {
+          r = await fetch(`${config.api}/api/jobs/${id}/files/${i}/chunks/${n}`, { method: "PUT", headers: { "content-type": "application/octet-stream" }, body: f.slice(n * size, (n + 1) * size) });
+          if (r.ok) break;
+          const err = await r.json().catch(() => ({}));
+          if (attempt >= 2 || r.status === 415) { say(err.error || "Upload failed."); return; }
+        }
+        done++;
+      }
+    }
+    r = await fetch(`${config.api}/api/jobs/${id}/submit`, { method: "POST" }); j = await r.json();
+    if (!r.ok) { say(j.error || "Upload failed."); return; }
+    location.hash = "job=" + id; show();
+  } catch (err) { say("Upload failed: " + err.message); }
 });
 async function show() {
   const m = location.hash.match(/job=([0-9a-f]{36})/); if (!m || !config.api) return;
@@ -79,12 +97,12 @@ async function show() {
   const st = $("#jobstate"); st.textContent = "";
   const say = (t) => { const p = document.createElement("p"); p.textContent = t; st.append(p); };
   if (!r.ok) { say(j.error); return; }
-  const label = { queued: "Queued.", processing: "Processing…", done: "Done.", failed: j.message, needs_credits: "Not enough credits: " + (j.message || "") };
+  const label = { uploading: "Upload not finished.", queued: "Queued. Usually done within 24 hours; keep this page bookmarked.", processing: "Processing…", done: "Done.", failed: j.message, needs_credits: "Not enough credits: " + (j.message || "") };
   say(`${label[j.status] || j.status} ${j.sample ? "(free 3-page sample)" : ""}`);
   if (j.status === "done") {
     for (const s of j.summary || []) say(`${s.file}: ${s.pages} pages · veraPDF PDF/UA-1 ${s.verapdf_ua1 ? "passed" : "has open items (see evidence)"}${s.figures_needing_review ? ` · ${s.figures_needing_review} figure(s) flagged for review` : ""}`);
     const ul = document.createElement("ul");
-    for (const o of j.outputs) { const li = document.createElement("li"); const a = document.createElement("a"); a.href = `${config.api}/api/jobs/${m[1]}/files/${encodeURIComponent(o)}`; a.textContent = o; li.append(a); ul.append(li); }
+    for (const o of j.outputs) { const li = document.createElement("li"); const a = document.createElement("a"); a.href = `${config.api}/api/jobs/${m[1]}/out/${encodeURIComponent(o)}`; a.textContent = o; li.append(a); ul.append(li); }
     st.append(ul);
   } else if (j.status === "queued" || j.status === "processing") setTimeout(show, 15000);
 }
