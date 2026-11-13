@@ -1,0 +1,29 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to check if a PDF is accessible · Tagwright</title><meta name="description" content="Five checks anyone can run on a PDF in minutes, the free tools that go deeper (PAC, veraPDF, a screen reader), and what each one can and can't tell you.">
+<link rel="canonical" href="https://beingrealfrank.github.io/tagwright/guides/check-pdf-accessibility.html">
+<link rel="stylesheet" href="../style.css"><link rel="icon" href="../favicon.svg" type="image/svg+xml"></head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top"><p class="brand"><a href="../">Tagwright</a></p><nav aria-label="Main"><ul><li><a href="../#check">Free check</a></li><li><a href="./">Guides</a></li><li><a href="../#pricing">Pricing</a></li></ul></nav></header>
+<main id="main"><article>
+<h1>How to check if a PDF is accessible</h1>
+<p class="lede">Five quick checks, then the tools that go deeper, and what none of them can tell you.</p>
+<h2>Five quick checks</h2>
+<ol>
+<li><strong>Can you select the text?</strong> If you can't highlight a sentence, the page is a picture of text (a scan). Screen readers get nothing until it is run through OCR.</li>
+<li><strong>Is it tagged?</strong> In Adobe Acrobat, open File › Properties: "Tagged PDF: Yes" means there is a structure tree. "No" means a screen reader has to guess everything.</li>
+<li><strong>Is the language set?</strong> Same dialog, Advanced › Language. Without it, screen readers may read English with the wrong voice and pronunciation.</li>
+<li><strong>Does it have a real title?</strong> The title bar should show a title, not a file name like <code>scan0042.pdf</code>.</li>
+<li><strong>Do the images have alt text?</strong> Hover an image with the Acrobat Tags panel open, or use a checker that reads the structure tree.</li>
+</ol>
+<p>The <a href="../#check">Tagwright checker</a> does all five, plus fonts, tab order, form field names, table headers and bookmarks, in your browser without uploading the file.</p>
+<h2>Deeper tools</h2>
+<ul>
+<li><strong><a href="https://verapdf.org/">veraPDF</a></strong>: the open-source validator for PDF/UA-1 (ISO 14289-1). It tests every rule a machine can test.</li>
+<li><strong>PAC (PDF Accessibility Checker)</strong>: a free Windows tool that runs the machine-checkable Matterhorn Protocol tests and shows a screen-reader preview.</li>
+<li><strong>Acrobat Pro's Accessibility Checker</strong>: useful, but it passes some files that fail PDF/UA, and it can't judge quality.</li>
+<li><strong>A screen reader</strong>: NVDA (free, Windows) or VoiceOver (built into macOS and iOS). Ten minutes listening to your document tells you more than any score.</li>
+</ul>
+<h2>What machines can't check</h2>
+<p>The <a href="https://pdfa.org/resource/the-matterhorn-protocol/">Matterhorn Protocol</a> lists 136 failure conditions for PDF/UA. 87 can be tested by software; the rest need judgement. Software can tell you an image <em>has</em> alt text, not whether "image1.png" or "chart" describes it. It can tell you headings exist, not whether the reading order makes sense. That is why Tagwright's evidence pack labels every check as machine-verified, agent-judged or human-sampled, instead of handing you a single score.</p>
+<aside class="quote"><p><strong>Check your own PDFs free:</strong> the <a href="../#check">Tagwright checker</a> runs in your browser and never uploads the file.</p></aside>
+</article></main><footer><p><a href="../">Tagwright</a> · <a href="../privacy.html">Privacy</a> · <a href="../terms.html">Terms</a></p><p>Not legal advice. No guarantee of compliance with any law or standard.</p></footer></body></html>
