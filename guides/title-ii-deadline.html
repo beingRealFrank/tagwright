@@ -1,0 +1,44 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ADA Title II PDF deadline: find your date · Tagwright</title><meta name="description" content="Find your ADA Title II web and PDF accessibility deadline in seconds: April 26, 2027 for governments of 50,000 or more, April 26, 2028 for smaller ones and special districts.">
+<link rel="canonical" href="https://beingrealfrank.github.io/tagwright/guides/title-ii-deadline.html">
+<link rel="stylesheet" href="../style.css"><link rel="icon" href="../favicon.svg" type="image/svg+xml"></head><body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="top"><p class="brand"><a href="../">Tagwright</a></p><nav aria-label="Main"><ul><li><a href="../#check">Free check</a></li><li><a href="./">Guides</a></li><li><a href="../#pricing">Pricing</a></li></ul></nav></header>
+<main id="main"><article>
+<h1>ADA Title II PDF deadline: find your date</h1>
+<p class="lede">Pick your kind of government and its population. You get the date your web content, including every PDF you publish, has to meet WCAG 2.1 AA.</p>
+<form id="calc" aria-describedby="calc-note">
+  <p><label for="kind">Type of government</label><br>
+  <select id="kind"><option value="local">State or local government (state, county, city, town, school district)</option>
+  <option value="special">Special district government (water, fire, library, transit district and similar)</option></select></p>
+  <p><label for="pop">Total population served</label><br><input id="pop" type="number" min="0" step="1" inputmode="numeric" placeholder="for example 12000" required>
+  <br><span id="calc-note" class="fine">For a state government, use the state population.</span></p>
+  <p><button type="submit">Show my deadline</button></p>
+</form>
+<div id="out" role="status" aria-live="polite"></div>
+<h2>Where these dates come from</h2>
+<p>The Department of Justice's rule under Title II of the ADA sets WCAG 2.1 Level AA as the standard for the web content and mobile apps of state and local governments. On April 20, 2026 the Department published an <a href="https://www.federalregister.gov/documents/2026/04/20/2026-07663/extension-of-compliance-dates-for-nondiscrimination-on-the-basis-of-disability-accessibility-of-web">interim final rule</a> that moved the compliance dates:</p>
+<ul><li><strong>April 26, 2027</strong> for state and local governments with a total population of 50,000 or more (moved from April 24, 2026);</li>
+<li><strong>April 26, 2028</strong> for public entities with a population under 50,000, and for any special district government (moved from April 26, 2027).</li></ul>
+<p>The technical standard did not change. Title II's general duty not to discriminate is in force today, whatever the rule's dates. Check the Federal Register for anything newer before you plan around these dates.</p>
+<h2>What it means for your PDFs</h2>
+<p>The rule covers PDFs and other documents you put on your site. A PDF that meets the standard is tagged, has a logical reading order, marks up headings, lists and tables, describes its images, names its form fields, sets its language and contains real text rather than a picture of text. Some older documents are exempt; our <a href="ada-title-ii-pdfs.html">guide to Title II and your PDFs</a> explains which, and how to triage a large library.</p>
+<h2>Next step</h2>
+<p>Start by finding out where you stand. <a href="../#check">Check a PDF in your browser</a>: nothing is uploaded, and you see what each file needs and roughly what it would cost to fix. Then <a href="../order.html">try the free 3-page sample</a>. This page is not legal advice.</p>
+<script>
+(function () {
+  var f = document.getElementById("calc"), out = document.getElementById("out");
+  var D27 = new Date(Date.UTC(2027, 3, 26)), D28 = new Date(Date.UTC(2028, 3, 26));
+  function fmt(d) { return d.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" }); }
+  f.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var kind = document.getElementById("kind").value, pop = Number(document.getElementById("pop").value);
+    if (!(pop >= 0) || document.getElementById("pop").value === "") { out.textContent = "Enter a population (a number)."; return; }
+    var big = kind === "local" && pop >= 50000, d = big ? D27 : D28;
+    var days = Math.ceil((d - new Date()) / 86400000);
+    var why = kind === "special" ? "special district governments have until the later date" : (big ? "a population of 50,000 or more" : "a population under 50,000");
+    out.textContent = "Your date: " + fmt(d) + " (" + why + "). " + (days > 0 ? "That is " + days + " days from today." : "That date has passed.");
+  });
+})();
+</script>
+</article></main><footer><p><a href="../">Tagwright</a> · <a href="../privacy.html">Privacy</a> · <a href="../terms.html">Terms</a></p><p>Not legal advice. No guarantee of compliance with any law or standard.</p></footer></body></html>
