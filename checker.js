@@ -182,6 +182,7 @@ function el(tag, attrs = {}, ...kids) {
 }
 
 async function checkFile(file, results) {
+  let row = null;
   const box = el("section", { class: "result", "aria-live": "polite" });
   const h = el("h3", {}, file.name);
   box.append(h, el("p", {}, "Checking…"));
@@ -210,10 +211,63 @@ async function checkFile(file, results) {
     }
     box.append(el("p", { class: "fine" }, "A quick check reads the file's structure. It is not a full PDF/UA audit; Tagwright runs veraPDF and a reviewed checklist on every file it fixes."));
     window.tagwrightLast = { pages: c.pages, score, fails };
+    const est = estimate(c, k);
+    row = { file: file.name, pages: c.pages, tagged: k.structTree && k.marked ? "yes" : "no", language: k.lang || "",
+            title: k.title || "", scanned_pages: c.textlessPages, images_without_alt: k.structTree ? c.figuresNoAlt : "",
+            problems: fails, score, est_fix_usd: fails ? Math.round(est.total * 100) / 100 : 0 };
   } catch (e) {
     box.lastChild.remove();
     box.append(el("p", { class: "bad" }, "Could not check this file: " + e.message + (/encrypt|password/i.test(e.message) ? " (it may be password-protected)." : "")));
+    row = { file: file.name, pages: "", tagged: "", language: "", title: "", scanned_pages: "", images_without_alt: "",
+            problems: "", score: "", est_fix_usd: "", note: "could not be read" };
   }
+  return row;
+}
+
+const COLS = [["file", "File"], ["pages", "Pages"], ["tagged", "Tagged"], ["language", "Language"], ["title", "Title"],
+              ["scanned_pages", "Scanned pages"], ["images_without_alt", "Images without alt text"],
+              ["problems", "Problems"], ["score", "Score"], ["est_fix_usd", "Est. fix ($)"]];
+
+function csvCell(v) {
+  let t = String(v ?? "");
+  if (/^[=+\-@\t\r]/.test(t)) t = "'" + t; // stop spreadsheet formula injection from file names and titles
+  return /[",\n\r]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t;
+}
+
+function renderInventory(rows, results) {
+  const sec = el("section", { class: "result", id: "inventory" });
+  sec.append(el("h3", {}, `Inventory: ${rows.length} file${rows.length === 1 ? "" : "s"}`));
+  const tot = rows.reduce((a, r) => a + (Number(r.est_fix_usd) || 0), 0), pg = rows.reduce((a, r) => a + (Number(r.pages) || 0), 0);
+  sec.append(el("p", {}, `${pg} pages in total. Estimated cost to fix every file with problems: about $${tot.toFixed(2)}. `,
+    el("a", { href: "order.html" }, "Fix these"), " (the first 3 pages of one file are free)."));
+  const tbl = el("table", { class: "inv" });
+  const cap = el("caption", { class: "sr" }, "Per-file results. Select a column heading to sort.");
+  const thead = el("thead"), htr = el("tr"), tbody = el("tbody");
+  let sortKey = null, asc = true;
+  const draw = () => {
+    tbody.textContent = "";
+    const sorted = [...rows];
+    if (sortKey) sorted.sort((a, b) => { const x = a[sortKey], y = b[sortKey]; const n = (typeof x === "number" && typeof y === "number");
+      return (n ? x - y : String(x).localeCompare(String(y))) * (asc ? 1 : -1); });
+    for (const r of sorted) { const tr = el("tr"); for (const [key] of COLS) tr.append(el(key === "file" ? "th" : "td", key === "file" ? { scope: "row" } : {}, String(r[key] ?? ""))); tbody.append(tr); }
+  };
+  for (const [key, label] of COLS) {
+    const b = el("button", { type: "button", class: "sortbtn" }, label);
+    b.addEventListener("click", () => { asc = sortKey === key ? !asc : true; sortKey = key; draw();
+      for (const th of htr.children) th.setAttribute("aria-sort", "none"); b.parentElement.setAttribute("aria-sort", asc ? "ascending" : "descending"); });
+    htr.append(el("th", { scope: "col", "aria-sort": "none" }, b));
+  }
+  thead.append(htr); tbl.append(cap, thead, tbody); draw();
+  sec.append(el("div", { class: "tablewrap" }, tbl));
+  const dl = el("button", { type: "button" }, "Download CSV");
+  dl.addEventListener("click", () => {
+    const lines = [COLS.map(c => c[1]).join(",")].concat(rows.map(r => COLS.map(([k]) => csvCell(r[k])).join(",")));
+    const blob = new Blob([lines.join("\r\n")], { type: "text/csv" });
+    const a = el("a", { href: URL.createObjectURL(blob), download: "pdf-inventory.csv" }); document.body.append(a); a.click(); a.remove();
+    window.tagwrightCsv = lines.join("\r\n");
+  });
+  sec.append(el("p", {}, dl, el("span", { class: "fine" }, " Everything above was computed in your browser; no file was uploaded.")));
+  results.prepend(sec);
 }
 
 const input = document.getElementById("pdf-input");
@@ -221,10 +275,13 @@ const drop = document.getElementById("drop");
 const results = document.getElementById("results");
 async function handle(files) {
   results.textContent = "";
-  for (const f of [...files].slice(0, 20)) {
+  const rows = [];
+  for (const f of [...files].slice(0, 60)) {
     if (!/\.pdf$/i.test(f.name) && f.type !== "application/pdf") continue;
-    await checkFile(f, results);
+    const row = await checkFile(f, results);
+    if (row) { rows.push(row); window.tagwrightRows = rows; }
   }
+  if (rows.length > 1) renderInventory(rows, results);
 }
 input.addEventListener("change", () => handle(input.files));
 drop.addEventListener("dragover", e => { e.preventDefault(); drop.classList.add("over"); });
