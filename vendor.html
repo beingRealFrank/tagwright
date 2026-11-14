@@ -1,0 +1,35 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Vendor information · Tagwright</title><meta name="description" content="Vendor information for Tagwright PDF accessibility remediation: prices, turnaround, payment, data handling and what is checked by machine and by a person."><link rel="canonical" href="https://beingrealfrank.github.io/tagwright/vendor.html"><link rel="stylesheet" href="style.css">
+<link rel="icon" href="favicon.svg" type="image/svg+xml"></head><body><a class="skip" href="#main">Skip to content</a>
+<header class="top"><p class="brand"><a href="./">Tagwright</a></p></header>
+<main id="main">
+<h1>Vendor information</h1>
+<p>For procurement and accessibility offices. Everything here is also on our other pages; this is the short version in one place. Questions or paperwork: <a href="mailto:frankjgilroy+tagwright@gmail.com">frankjgilroy+tagwright@gmail.com</a>.</p>
+<h2>Who we are</h2>
+<p>Tagwright is operated by Frank Gilroy. It fixes PDF files so they work with screen readers and returns a record of how each file was checked.</p>
+<h2>What we do</h2>
+<p>PDF accessibility remediation. We tag headings, lists, tables, figures and reading order, set the language and title, run OCR on scanned pages, write descriptions for images, and validate the result with the open-source veraPDF validator against PDF/UA-1. PDF only for now: Word, PowerPoint and EPUB are not offered yet.</p>
+<h2>Prices</h2>
+<p>We sell prepaid page credits. A simple page uses 1 credit, a complex page (tables, forms, many figures) uses 3, and a scanned page that needs OCR uses 1 more. Credits are valid for 12 months and are only used for pages actually processed.</p>
+<table class="prices"><caption class="sr">Credit packs</caption><thead><tr><th scope="col">Pack</th><th scope="col">Price</th><th scope="col">Per credit</th></tr></thead><tbody>
+<tr><th scope="row">20 credits</th><td>$30</td><td>$1.50</td></tr><tr><th scope="row">100 credits</th><td>$125</td><td>$1.25</td></tr><tr><th scope="row">500 credits</th><td>$500</td><td>$1.00</td></tr></tbody></table>
+<p>That is $1.00 to $1.50 for a simple page and $3.00 to $4.50 for a complex one. The first 3 pages of one file are free, with no account, so you can judge the result. Larger volumes: ask us.</p>
+<h2>Turnaround</h2>
+<p>Within 24 hours of upload. Most files finish much sooner.</p>
+<h2>Payment</h2>
+<p>By card at checkout, handled by Polar as merchant of record. A purchase card works like any card. The receipt that arrives by email can serve as your invoice. If your office needs a W-9 or a purchase order for a larger order, email us the amount and we will reply within 2 business days.</p>
+<h2>What you receive</h2>
+<p>For each file: the fixed PDF, and an evidence pack containing the veraPDF PDF/UA-1 report; a checkpoint table that labels each item as machine-verified, automated review or human-sampled; a manifest of image descriptions; a table-header manifest; the first 40 tagged elements in reading order; and SHA-256 hashes of the input and output with a signed ledger entry.</p>
+<h2>What still needs a person</h2>
+<p>A machine check cannot judge whether an image description says what matters, whether the reading order makes sense, or whether headings and tables match your intent. The evidence pack says which checks fall where. Image descriptions are machine-written and cross-checked by a second, independent pass, and they can still be wrong. A file that loses text or ends up with almost nothing tagged is held for a manual check and is neither delivered nor charged for. A file that fails a veraPDF rule is delivered with that rule listed in its report.</p>
+<p>In our own test of 150 real US government PDFs, 82% passed all three of our automated checks (veraPDF PDF/UA-1, no text lost, and the text covered by the tags). The test does not score image descriptions. A few kinds of file are not handled yet, for example some scanned or image-heavy documents.</p>
+<h2>Data handling</h2>
+<ul><li>Files are uploaded over HTTPS and stored with Netlify during processing.</li>
+<li>Source files and results are deleted no later than 30 days after delivery.</li>
+<li>We keep a ledger of SHA-256 hashes and job metadata, never document content.</li>
+<li>Text and page images may be processed by Anthropic solely to describe images and check structure. They are not used to train models.</li>
+<li>Subprocessors: GitHub (website hosting), Netlify (upload storage and file delivery), Polar (payments, as merchant of record), Anthropic (image and text processing for submitted files).</li>
+<li>Please do not send protected health information or student education records.</li></ul>
+<h2>Not available yet</h2>
+<p>A VPAT or accessibility conformance report, a SOC 2 report, an insurance certificate, a human-reviewed quality tier, and Word or PowerPoint remediation. If your office needs one of these before buying, tell us and we will say plainly whether we can provide it.</p>
+<p>This page is not legal advice. Fixed files do not by themselves satisfy any law or procurement standard.</p>
+</main><footer><p><a href="./">Tagwright</a> · <a href="privacy.html">Privacy</a></p></footer></body></html>
