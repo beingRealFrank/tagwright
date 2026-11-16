@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<report>
+  <buildInformation>
+    <releaseDetails id="core" version="1.30.4" buildDate="2026-11-09T13:07:00-05:00"></releaseDetails>
+    <releaseDetails id="validation-model" version="1.30.4" buildDate="2026-11-09T13:10:00-05:00"></releaseDetails>
+    <releaseDetails id="apps" version="1.30.0" buildDate="2026-11-09T15:19:00-05:00"></releaseDetails>
+  </buildInformation>
+  <jobs>
+    <job>
+      <item size="1793134">
+        <name>/Users/frank/work/a11y/out/bench9/000019/000019.tagged.pdf</name>
+      </item>
+      <validationReport jobEndStatus="normal" profileName="PDF/UA-1 validation profile" statement="PDF file is compliant with Validation Profile requirements." isCompliant="true">
+        <details passedRules="106" failedRules="0" passedChecks="7036" failedChecks="0"></details>
+      </validationReport>
+      <duration start="1794686859840" finish="1794686862135">00:00:02.295</duration>
+    </job>
+  </jobs>
+  <batchSummary totalJobs="1" failedToParse="0" encrypted="0" outOfMemory="0" veraExceptions="0">
+    <validationReports compliant="1" nonCompliant="0" failedJobs="0">1</validationReports>
+    <featureReports failedJobs="0">0</featureReports>
+    <repairReports failedJobs="0">0</repairReports>
+    <duration start="1794686859667" finish="1794686862254">00:00:02.587</duration>
+  </batchSummary>
+</report>

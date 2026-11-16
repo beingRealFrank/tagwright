@@ -1,0 +1,8 @@
+check,result,basis
+veraPDF PDF/UA-1 machine rules (ISO 14289-1),pass,machine-verified
+Figures have meaningful alternative text (Matterhorn 13),3/3 written and cross-checked,automated review (writer + independent check)
+Headings mark the document's sections in order (Matterhorn 14),2 correction(s),machine rules + automated reviewed
+Table header cells marked with scope (Matterhorn 15),0 table(s); headers listed in tables.csv,machine-detected
+Logical reading order (Matterhorn 09),see reading-order-excerpt.txt (first 40 elements) and reading-order.txt,machine (layout analysis)
+Every character maps to real text (fonts without Unicode data),see actions: any 'left as U+FFFD' means some text needs manual review,machine-verified
+Screen-reader walk-through by a person,not sampled in this tier,human-sampled (QA tier only)
