@@ -193,7 +193,7 @@ async function checkFile(file, results) {
     if (k.error) throw new Error(k.error);
     const c = await contentChecks(buf.slice());
     const R = grade(c, k);
-    if (window.twHit) window.twHit("tool_run");
+    if (window.twHit) window.twHit("check_run");
     const total = R.reduce((a, r) => a + r.weight, 0), got = R.reduce((a, r) => a + (r.ok ? r.weight : 0), 0);
     const score = Math.round(100 * got / total);
     const fails = R.filter(r => !r.ok).length;
